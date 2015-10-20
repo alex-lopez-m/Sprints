@@ -10,23 +10,23 @@ import java.util.ArrayList;
 
 import one.sprint.alexmalvaez.com.sprintone.R;
 import one.sprint.alexmalvaez.com.sprintone.adapters.innerclasses.SuperFlingHolder;
-import one.sprint.alexmalvaez.com.sprintone.models.Joke;
+import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
 
 /**
  * Created by Android1 on 10/6/2015.
  */
 public class SuperFlingAdapter extends RecyclerView.Adapter<SuperFlingHolder>{
 
-    private ArrayList<Joke> jokeList;
+    private ArrayList<SuperFling> superFlings;
     private Context context;
 
-    public SuperFlingAdapter(Context context, ArrayList<Joke> listItem){
+    public SuperFlingAdapter(Context context, ArrayList<SuperFling> listItem){
         this.context = context;
-        this.jokeList = listItem;
+        this.superFlings = listItem;
     }
 
-    public void setJokeList(ArrayList<Joke> jokeList) {
-        this.jokeList = jokeList;
+    public void setSuperFlings(ArrayList<SuperFling> superFlings) {
+        this.superFlings = superFlings;
     }
 
     @Override
@@ -38,17 +38,18 @@ public class SuperFlingAdapter extends RecyclerView.Adapter<SuperFlingHolder>{
     }
 
     @Override
-    public void onBindViewHolder(SuperFlingHolder jokeHolder, int position) {
-        Joke joke = jokeList.get(position);
+    public void onBindViewHolder(SuperFlingHolder superFlingHolder, int position) {
+        SuperFling superFling = superFlings.get(position);
 
-        jokeHolder.tvCategory.setText(joke.getCategoriesString());
-        jokeHolder.tvJoke.setText(joke.des);
+        //superFlingHolder.imFling = (superFling.getCategoriesString());
+        //Use Picasso
+        superFlingHolder.tvTitle.setText(superFling.title);
     }
 
     @Override
     public int getItemCount() {
-        if(jokeList != null)
-            return jokeList.size();
+        if(superFlings != null)
+            return superFlings.size();
         return 0;
     }
 }

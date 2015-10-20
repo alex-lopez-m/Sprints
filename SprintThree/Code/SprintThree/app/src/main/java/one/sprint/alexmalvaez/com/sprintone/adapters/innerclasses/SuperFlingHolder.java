@@ -3,6 +3,7 @@ package one.sprint.alexmalvaez.com.sprintone.adapters.innerclasses;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import one.sprint.alexmalvaez.com.sprintone.R;
@@ -12,19 +13,19 @@ import one.sprint.alexmalvaez.com.sprintone.R;
  */
 public class SuperFlingHolder extends RecyclerView.ViewHolder{
 
-    public TextView tvCategory;
-    public TextView tvJoke;
+    public ImageView imFling;
+    public TextView tvTitle;
 
     public SuperFlingHolder(View view){
         super(view);
 
-        this.tvCategory = (TextView) view.findViewById(R.id.cv_tv_category);
-        this.tvJoke = (TextView) view.findViewById(R.id.cv_tv_joke);
+        this.imFling = (ImageView) view.findViewById(R.id.cv_img_fling);
+        this.tvTitle = (TextView) view.findViewById(R.id.cv_tv_title);
 
         view.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Log.d(SuperFlingHolder.class.getSimpleName(),"Category: " + tvCategory.getText().toString() + " Joke: " + tvJoke.getText().toString());
+                Log.d(SuperFlingHolder.class.getSimpleName(),"Title: " + tvTitle.getText().toString());
             }
         });
     }
