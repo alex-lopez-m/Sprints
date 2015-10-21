@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textIsSelectable="false"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/tv_imageId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/android_green"
+        android:textIsSelectable="false"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/android_red"
+        android:textIsSelectable="false"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/tv_userId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/android_blue"
+        android:textIsSelectable="false"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/tv_userName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/android_darkorange"
+        android:textIsSelectable="false"
+        android:textSize="10sp" />
+
+</LinearLayout>

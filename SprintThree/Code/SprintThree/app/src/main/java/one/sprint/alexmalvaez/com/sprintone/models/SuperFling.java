@@ -11,6 +11,10 @@ public class SuperFling {
     public String userId;
     public String userName;
 
+    public SuperFling(){
+
+    }
+
     public SuperFling(String id, String imageId, String title, String userId, String userName) {
         this.id = id;
         this.imageId = imageId;

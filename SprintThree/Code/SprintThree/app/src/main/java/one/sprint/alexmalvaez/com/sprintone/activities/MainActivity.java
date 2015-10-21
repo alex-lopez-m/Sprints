@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,12 +33,14 @@ import java.util.Random;
 
 import one.sprint.alexmalvaez.com.sprintone.R;
 import one.sprint.alexmalvaez.com.sprintone.adapters.SuperFlingAdapter;
+import one.sprint.alexmalvaez.com.sprintone.adapters.SuperFlingSSPAdapter;
 import one.sprint.alexmalvaez.com.sprintone.database.SuperFlingDBManager;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
 import one.sprint.alexmalvaez.com.sprintone.util.RequestQueueSingleton;
+import one.sprint.alexmalvaez.com.sprintone.views.VerticalViewPager;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity { //AppCompatActivity {
 
     /* URLs */
     private static final String FLING_URL_JSON_ARRAY = "http://challenge.superfling.com";
@@ -57,14 +61,58 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private SuperFlingAdapter adapter;
 
+    /**
+     * The pager widget, which handles animation and allows swiping horizontally
+     * to access previous and next pages.
+     */
+    VerticalViewPager verticalViewPager = null;
+
+    /**
+     * The pager adapter, which provides the pages to the view pager widget.
+     */
+    SuperFlingSSPAdapter superFlingSSPAdapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d(MainActivity.class.getSimpleName(), "UNO");
+
         sfDBManager = new SuperFlingDBManager(this);
+
+        Log.d(MainActivity.class.getSimpleName(), "DOS");
+
+        // Instantiate a ViewPager and a PagerAdapter.
+        verticalViewPager = (VerticalViewPager) findViewById(R.id.pager);
+
+        Log.d(MainActivity.class.getSimpleName(), "TRES");
+
+        superFlingSSPAdapter = new SuperFlingSSPAdapter(getSupportFragmentManager());
+
+        Log.d(MainActivity.class.getSimpleName(), "CUATRO");
+
+        superFlingList = new ArrayList<SuperFling>();
+
+        Log.d(MainActivity.class.getSimpleName(), "CINCO superFlingList: " +superFlingList.size());
+
+        superFlingList.add(new SuperFling(" ", " ", " ", " ", " "));
+
+        Log.d(MainActivity.class.getSimpleName(), "SEIS superFlingList: " + superFlingList.size());
+
+        superFlingSSPAdapter.setSuperFlingList(superFlingList);
+
+        Log.d(MainActivity.class.getSimpleName(), "SIETE");
+
+        verticalViewPager.setAdapter(superFlingSSPAdapter);
+
+        Log.d(MainActivity.class.getSimpleName(), "OCHO");
+
         //initiateUI();
         makeJsonArrayReq();
+
+        Log.d(MainActivity.class.getSimpleName(), "NUEVE");
     }
 
     @Override
@@ -157,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
             superFlingRecords.close();
             sfDBManager.close();
 
+            superFlingSSPAdapter.setSuperFlingList(superFlings);
+            superFlingSSPAdapter.notifyDataSetChanged();
             for(int i=0; i<superFlings.size(); i++){
                 Log.d(MainActivity.class.getSimpleName(), "SUPERFLING " + i + ": " + superFlings.get(i));
             }
@@ -216,8 +266,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        // Adding request to request queu
+        // Adding request to request queue
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonArrayReq, "", getApplicationContext());
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        // Return to previous page when we press back button
+        if (this.verticalViewPager.getCurrentItem() == 0)
+            super.onBackPressed();
+        else
+            this.verticalViewPager.setCurrentItem(this.verticalViewPager.getCurrentItem() - 1);
+
     }
 
 }
