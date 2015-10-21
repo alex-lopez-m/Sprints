@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import one.sprint.alexmalvaez.com.sprintone.database.interfaces.SuperFlingDBInterface;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
@@ -84,6 +85,9 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
 
     @Override
     public Cursor getAllSuperFling() {
+
+        Log.d(SuperFlingDBManager.class.getSimpleName(), "ENTRANDO A getAllSuperFling");
+
         openOnReadableMode();
 
         Cursor cursor;
@@ -97,8 +101,9 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         String having = null;
         String orderBy = null;
 
-        cursor = dataBase.query(SuperFlingDBSquema.TABLE_NAME, columns, selection,
-                selectionArgs, groupBy, having, orderBy);
+        cursor = dataBase.query(SuperFlingDBSquema.TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy);
+
+        Log.d(SuperFlingDBManager.class.getSimpleName(), "CURSOR OBTENIDO CON: " + cursor.getCount());
         return cursor;
     }
 }

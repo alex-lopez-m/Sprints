@@ -1,5 +1,9 @@
 package one.sprint.alexmalvaez.com.sprintone.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -27,6 +31,7 @@ import java.util.Random;
 
 import one.sprint.alexmalvaez.com.sprintone.R;
 import one.sprint.alexmalvaez.com.sprintone.adapters.SuperFlingAdapter;
+import one.sprint.alexmalvaez.com.sprintone.database.SuperFlingDBManager;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
 import one.sprint.alexmalvaez.com.sprintone.util.RequestQueueSingleton;
 
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_USER_ID = "UserID";
     private static final String TAG_USER_NAME = "UserName";
 
+    private SuperFlingDBManager sfDBManager;
 
     private ArrayList<SuperFling> superFlingList;
 
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sfDBManager = new SuperFlingDBManager(this);
         //initiateUI();
         makeJsonArrayReq();
     }
@@ -110,6 +117,52 @@ public class MainActivity extends AppCompatActivity {
 
 */
 
+    public void loadDataIntoDB(){
+        int count = 0;
+
+        for (int i = 0; i < superFlingList.size(); i++) {
+
+            long rowId = sfDBManager.addSuperFling(superFlingList.get(i));
+
+            if (rowId == -1) {
+                Toast.makeText(this, "There is a problem adding SuperFling", Toast.LENGTH_SHORT).show();
+                //Make a rollback
+            } else {
+                count++;
+            }
+        }
+
+        Toast.makeText(this, count + " SuperFlings added to the DB", Toast.LENGTH_SHORT).show();
+    }
+
+    public void printSuperFlingData(){
+        Log.d(MainActivity.class.getSimpleName(), "ENTRANDO A OBTENER DATOS ");
+        Cursor superFlingRecords = sfDBManager.getAllSuperFling();
+
+        if(superFlingRecords.getCount() == 0){
+            Log.d(MainActivity.class.getSimpleName(), "NOTHING TO DISPLAY");
+        } else {
+            Log.d(MainActivity.class.getSimpleName(), "SE OBTUVIERON DATOS ");
+            ArrayList<SuperFling> superFlings = new ArrayList<>();
+
+            while (superFlingRecords.moveToNext()) {
+                SuperFling sf = new SuperFling(superFlingRecords.getString(0),
+                                               superFlingRecords.getString(1),
+                                               superFlingRecords.getString(2),
+                                               superFlingRecords.getString(3),
+                                               superFlingRecords.getString(4));
+                superFlings.add(sf);
+            }
+
+            superFlingRecords.close();
+            sfDBManager.close();
+
+            for(int i=0; i<superFlings.size(); i++){
+                Log.d(MainActivity.class.getSimpleName(), "SUPERFLING " + i + ": " + superFlings.get(i));
+            }
+        }
+    }
+
     public void makeJsonArrayReq(){
         JsonArrayRequest jsonArrayReq = new JsonArrayRequest(
                 FLING_URL_JSON_ARRAY,
@@ -144,7 +197,10 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             Log.e("ServiceHandler", "Couldn't get any data from the url");
                         }
-
+                        if(superFlingList != null && superFlingList.size() > 0) {
+                            loadDataIntoDB();
+                            printSuperFlingData();
+                        }
                         //refresh();
                         //adapter.setJokeList(jokeList);
                         //adapter.notifyDataSetChanged();
