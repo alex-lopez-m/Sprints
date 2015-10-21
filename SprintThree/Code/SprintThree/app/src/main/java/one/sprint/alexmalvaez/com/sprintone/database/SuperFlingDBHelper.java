@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class SuperFlingDBHelper extends SQLiteOpenHelper {
 
-    public SuperFlingDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public SuperFlingDBHelper(Context context) {
         super(context, SuperFlingDBSquema.DATABASE_NAME, null, SuperFlingDBSquema.DATABASE_VERSION);
     }
 
