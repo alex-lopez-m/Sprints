@@ -19,4 +19,13 @@ public class SuperFling {
         this.userName = userName;
     }
 
+    @Override
+    public String toString(){
+        return "[id:" + id +
+                ", imageId:" + imageId +
+                ", title:" + title +
+                ", userId:" + userId +
+                ", userName:" + userName + "]";
+    }
+
 }

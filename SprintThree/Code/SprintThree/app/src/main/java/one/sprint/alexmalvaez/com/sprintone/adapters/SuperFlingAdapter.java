@@ -52,4 +52,5 @@ public class SuperFlingAdapter extends RecyclerView.Adapter<SuperFlingHolder>{
             return superFlings.size();
         return 0;
     }
+
 }

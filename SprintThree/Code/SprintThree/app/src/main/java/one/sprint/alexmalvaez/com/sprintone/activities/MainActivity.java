@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
@@ -26,7 +27,6 @@ import java.util.Random;
 
 import one.sprint.alexmalvaez.com.sprintone.R;
 import one.sprint.alexmalvaez.com.sprintone.adapters.SuperFlingAdapter;
-import one.sprint.alexmalvaez.com.sprintone.models.Joke;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
 import one.sprint.alexmalvaez.com.sprintone.util.RequestQueueSingleton;
 
@@ -34,8 +34,8 @@ import one.sprint.alexmalvaez.com.sprintone.util.RequestQueueSingleton;
 public class MainActivity extends AppCompatActivity {
 
     /* URLs */
-    private static final String URL_JSON_ARRAY_JOKE = "http://challenge.superfling.com";
-    private static final String URL_PHOTO_STREAM = "http://http://challenge.superfling.com/photos";
+    private static final String FLING_URL_JSON_ARRAY = "http://challenge.superfling.com";
+    private static final String URL_PHOTO_STREAM = "http://challenge.superfling.com/photos";
 
     /* Tags used in the JSON String Response  */
     private static final String TAG_ID = "ID";
@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initiateUI();
+        //initiateUI();
+        makeJsonArrayReq();
     }
 
     @Override
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+/*
     public void initiateUI(){
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -103,44 +104,47 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        superFlingList = new ArrayList<SuperFling>();
-
-
         adapter = new SuperFlingAdapter(this, superFlingList);
         recyclerView.setAdapter(adapter);
     }
 
-    public void makeJsonObjectReq(){
-        JsonObjectRequest jsonObjectReq = new JsonObjectRequest(
-                URL_JSON_ARRAY_JOKE,
-                new Response.Listener<JSONObject>() {
+*/
+
+    public void makeJsonArrayReq(){
+        JsonArrayRequest jsonArrayReq = new JsonArrayRequest(
+                FLING_URL_JSON_ARRAY,
+                new Response.Listener<JSONArray>() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
-                        //Log.d(MainActivity.class.getSimpleName(), "RESPUESTA: " + response.toString());
-                        //Toast.makeText(getApplicationContext(), "RESPUESTA: " + response.toString(), Toast.LENGTH_LONG).show();
+                    public void onResponse(JSONArray jsonArray) {
+                        Log.d(MainActivity.class.getSimpleName(), "RESPUESTA: " + jsonArray.toString());
+                        Toast.makeText(getApplicationContext(), "RESPUESTA: " + jsonArray.toString(), Toast.LENGTH_LONG).show();
 
-                        if(response != null && response.length() > 0) {
+                        if(jsonArray != null && jsonArray.length() > 0) {
 
                             try {
 
-                                JSONArray jokeJSONArray = response.getJSONArray(TAG_ITEM_VALUE);
-                                jokeList = new ArrayList<Joke>();
+                                //JSONArray jokeJSONArray = jsonArray.getJSONArray(TAG_ITEM_VALUE);
+                                //jokeList = new ArrayList<Joke>();
+                                superFlingList = new ArrayList<SuperFling>();
 
-                                for(int i=0; i<jokeJSONArray.length(); i++){
+                                for(int i=0; i<jsonArray.length(); i++){
 
-                                    JSONObject jo = jokeJSONArray.getJSONObject(i);
+                                    JSONObject jo = jsonArray.getJSONObject(i);
 
-                                    ArrayList<String> categoriesList = new ArrayList<String>();
-                                    JSONArray catJSONArray = jo.getJSONArray(TAG_ITEM_CATEGORIES);
 
-                                    for(int j=0; j<catJSONArray.length(); j++){
-                                        categoriesList.add(catJSONArray.get(j).toString());
-                                    }
+                                    //ArrayList<String> categoriesList = new ArrayList<String>();
+                                    //JSONArray catJSONArray = jo.getJSONArray(TAG_ITEM_CATEGORIES);
 
-                                    Joke joke = new Joke(categoriesList, jo.getString(TAG_ITEM_ID), jo.getString(TAG_ITEM_JOKE));
-                                    jokeList.add(joke);
-                                    Log.d(MainActivity.class.getSimpleName(), "JOKE " + i + ": " + joke);
+                                    //for(int j=0; j<catJSONArray.length(); j++){
+                                    //    categoriesList.add(catJSONArray.get(j).toString());
+                                    //}
+                                    SuperFling sf = new SuperFling(jo.getString(TAG_ID), jo.getString(TAG_IMAGE_ID), jo.getString(TAG_TITLE), jo.getString(TAG_USER_ID), jo.getString(TAG_USER_NAME));
+                                    //Joke joke = new Joke(categoriesList, jo.getString(TAG_ITEM_ID), jo.getString(TAG_ITEM_JOKE));
+
+                                    Log.d(MainActivity.class.getSimpleName(), "SUPERFLING " + i + ": " + sf);
+
+                                    superFlingList.add(sf);
 
                                 }
 
@@ -160,13 +164,14 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.d(MainActivity.class.getSimpleName(), "ERROR!!! " + error.getMessage());
                         VolleyLog.d(MainActivity.class.getSimpleName(), "Error: " + error.getMessage());
-                        Toast.makeText(getApplicationContext(), "ERROR!!! ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "ERROR!!! " + error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
 
-        // Adding request to request queue
-        RequestQueueSingleton.getInstance().addToRequestQueue(jsonObjectReq, "", getApplicationContext());
+        // Adding request to request queu
+        RequestQueueSingleton.getInstance().addToRequestQueue(jsonArrayReq, "", getApplicationContext());
     }
 
 }
