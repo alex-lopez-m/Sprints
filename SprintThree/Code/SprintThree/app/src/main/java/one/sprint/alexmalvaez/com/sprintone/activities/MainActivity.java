@@ -117,32 +117,22 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        Log.d(MainActivity.class.getSimpleName(), "RESPUESTA: " + jsonArray.toString());
-                        Toast.makeText(getApplicationContext(), "RESPUESTA: " + jsonArray.toString(), Toast.LENGTH_LONG).show();
+                        //Log.d(MainActivity.class.getSimpleName(), "RESPUESTA: " + jsonArray.toString());
+                        //Toast.makeText(getApplicationContext(), "RESPUESTA: " + jsonArray.toString(), Toast.LENGTH_LONG).show();
 
                         if(jsonArray != null && jsonArray.length() > 0) {
 
                             try {
 
-                                //JSONArray jokeJSONArray = jsonArray.getJSONArray(TAG_ITEM_VALUE);
-                                //jokeList = new ArrayList<Joke>();
                                 superFlingList = new ArrayList<SuperFling>();
 
                                 for(int i=0; i<jsonArray.length(); i++){
 
                                     JSONObject jo = jsonArray.getJSONObject(i);
 
-
-                                    //ArrayList<String> categoriesList = new ArrayList<String>();
-                                    //JSONArray catJSONArray = jo.getJSONArray(TAG_ITEM_CATEGORIES);
-
-                                    //for(int j=0; j<catJSONArray.length(); j++){
-                                    //    categoriesList.add(catJSONArray.get(j).toString());
-                                    //}
                                     SuperFling sf = new SuperFling(jo.getString(TAG_ID), jo.getString(TAG_IMAGE_ID), jo.getString(TAG_TITLE), jo.getString(TAG_USER_ID), jo.getString(TAG_USER_NAME));
-                                    //Joke joke = new Joke(categoriesList, jo.getString(TAG_ITEM_ID), jo.getString(TAG_ITEM_JOKE));
 
-                                    Log.d(MainActivity.class.getSimpleName(), "SUPERFLING " + i + ": " + sf);
+                                    //Log.d(MainActivity.class.getSimpleName(), "SUPERFLING " + i + ": " + sf);
 
                                     superFlingList.add(sf);
 
