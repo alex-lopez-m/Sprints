@@ -1,5 +1,6 @@
 package one.sprint.alexmalvaez.com.sprintone.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,7 +27,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         dataBase.close();
     }
 
-    public void open() throws SQLiteException {
+    public void openOnWritableMode() throws SQLiteException {
         try {
             dataBase = sfDBHelper.getWritableDatabase();
         } catch (SQLiteException ex) {
@@ -34,18 +35,70 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         }
     }
 
+    public void openOnReadableMode() throws SQLiteException {
+        try {
+            dataBase = sfDBHelper.getReadableDatabase();
+        } catch (SQLiteException ex) {
+
+        }
+    }
+
     @Override
-    public int addSuperFling(SuperFling superFling) {
-        return 0;
+    public long addSuperFling(SuperFling superFling) {
+
+        openOnWritableMode();
+
+        ContentValues values = new ContentValues();
+        values.put(SuperFlingDBSquema.Col_Super_Fling_ID, Integer.valueOf(superFling.id));
+        values.put(SuperFlingDBSquema.Col_Image_Id, Integer.valueOf(superFling.imageId));
+        values.put(SuperFlingDBSquema.Col_Title, superFling.title);
+        values.put(SuperFlingDBSquema.Col_User_Id, Integer.valueOf(superFling.userId));
+        values.put(SuperFlingDBSquema.Col_User_Name, superFling.userName);
+
+        long rowId = dataBase.insert(SuperFlingDBSquema.TABLE_NAME, null, values);
+
+        close();
+
+        return rowId;
     }
 
     @Override
     public Cursor getSuperFlingById(String id) {
-        return null;
+        openOnReadableMode();
+
+        Cursor cursor;
+
+        String[] columns = { SuperFlingDBSquema.Col_Super_Fling_ID, SuperFlingDBSquema.Col_Image_Id,
+                SuperFlingDBSquema.Col_Title, SuperFlingDBSquema.Col_User_Id,
+                SuperFlingDBSquema.Col_User_Name};
+        String selection = SuperFlingDBSquema.Col_Super_Fling_ID + " = " + id;
+        String[] selectionArgs = null;
+        String groupBy = null;
+        String having = null;
+        String orderBy = null;
+
+        cursor = dataBase.query(SuperFlingDBSquema.TABLE_NAME, columns, selection,
+                selectionArgs, groupBy, having, orderBy);
+        return cursor;
     }
 
     @Override
     public Cursor getAllSuperFling() {
-        return null;
+        openOnReadableMode();
+
+        Cursor cursor;
+
+        String[] columns = { SuperFlingDBSquema.Col_Super_Fling_ID, SuperFlingDBSquema.Col_Image_Id,
+                             SuperFlingDBSquema.Col_Title, SuperFlingDBSquema.Col_User_Id,
+                             SuperFlingDBSquema.Col_User_Name};
+        String selection = null;
+        String[] selectionArgs = null;
+        String groupBy = null;
+        String having = null;
+        String orderBy = null;
+
+        cursor = dataBase.query(SuperFlingDBSquema.TABLE_NAME, columns, selection,
+                selectionArgs, groupBy, having, orderBy);
+        return cursor;
     }
 }
