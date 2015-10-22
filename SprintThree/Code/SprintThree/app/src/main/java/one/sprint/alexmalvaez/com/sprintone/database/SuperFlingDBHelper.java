@@ -15,7 +15,7 @@ public class SuperFlingDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sqlString = "CREATE TABLE " + SuperFlingDBSquema.TABLE_NAME + "("
+        String sqlString = "CREATE TABLE " + SuperFlingDBSquema.TABLE_SUPER_FLING + "("
                 + SuperFlingDBSquema.Col_Super_Fling_ID + " INTEGER PRIMARY KEY , "
                 + SuperFlingDBSquema.Col_Image_Id + " INTEGER , "
                 + SuperFlingDBSquema.Col_Title + " TEXT , "
@@ -31,7 +31,7 @@ public class SuperFlingDBHelper extends SQLiteOpenHelper {
         if (oldVersion >= newVersion) {
             return;
         }
-        String sqlString = "DROP TABLE IF EXISTS " + SuperFlingDBSquema.TABLE_NAME;
+        String sqlString = "DROP TABLE IF EXISTS " + SuperFlingDBSquema.TABLE_SUPER_FLING;
         db.execSQL(sqlString);
         onCreate(db);
     }

@@ -8,11 +8,8 @@ import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 import one.sprint.alexmalvaez.com.sprintone.database.interfaces.SuperFlingDBInterface;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
@@ -63,7 +60,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         values.put(SuperFlingDBSquema.Col_User_Id, Integer.valueOf(superFling.userId));
         values.put(SuperFlingDBSquema.Col_User_Name, superFling.userName);
 
-        long rowId = dataBase.insert(SuperFlingDBSquema.TABLE_NAME, null, values);
+        long rowId = dataBase.insert(SuperFlingDBSquema.TABLE_SUPER_FLING, null, values);
 
         close();
 
@@ -85,7 +82,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         whereArgs[0] = imageId;
         String whereClause = " " + SuperFlingDBSquema.Col_Image_Id + "=? ";
 
-        int res = dataBase.update(SuperFlingDBSquema.TABLE_NAME, values, whereClause, whereArgs);
+        int res = dataBase.update(SuperFlingDBSquema.TABLE_SUPER_FLING, values, whereClause, whereArgs);
 
         close();
 
@@ -93,23 +90,26 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
 
     }
 
-    public Bitmap getImageById(String id){
-        Bitmap bmp = null;
+    public Bitmap getImageById(String imageId){
+        Bitmap bitmap = null;
 
         openOnReadableMode();
 
-        Cursor c = dataBase.rawQuery("select  from tb", null);
+        String[] selectionArgs = new String[0];
+        selectionArgs[0] = imageId;
+
+        Cursor c = dataBase.rawQuery("SELECT " + SuperFlingDBSquema.Col_Image_Stream
+                                    + " FROM " + SuperFlingDBSquema.TABLE_SUPER_FLING
+                                    + " WHERE " + SuperFlingDBSquema.Col_Image_Id + " = ?", selectionArgs);
 
         if (c.moveToNext()){
-
             byte[] image = c.getBlob(0);
-            bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-            //imageView1.setImageBitmap(bmp);
-
-            //Toast.makeText(this, "Select Success", Toast.LENGTH_SHORT).show();
+            bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
         }
 
-        return bmp;
+        close();
+
+        return bitmap;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         String having = null;
         String orderBy = null;
 
-        cursor = dataBase.query(SuperFlingDBSquema.TABLE_NAME, columns, selection,
+        cursor = dataBase.query(SuperFlingDBSquema.TABLE_SUPER_FLING, columns, selection,
                 selectionArgs, groupBy, having, orderBy);
         return cursor;
     }
@@ -150,7 +150,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         String having = null;
         String orderBy = null;
 
-        cursor = dataBase.query(SuperFlingDBSquema.TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy);
+        cursor = dataBase.query(SuperFlingDBSquema.TABLE_SUPER_FLING, columns, selection, selectionArgs, groupBy, having, orderBy);
 
         Log.d(SuperFlingDBManager.class.getSimpleName(), "CURSOR OBTENIDO CON: " + cursor.getCount());
         return cursor;
