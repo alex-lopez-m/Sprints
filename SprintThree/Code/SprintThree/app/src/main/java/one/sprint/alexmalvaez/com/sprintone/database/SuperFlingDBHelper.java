@@ -20,7 +20,8 @@ public class SuperFlingDBHelper extends SQLiteOpenHelper {
                 + SuperFlingDBSquema.Col_Image_Id + " INTEGER , "
                 + SuperFlingDBSquema.Col_Title + " TEXT , "
                 + SuperFlingDBSquema.Col_User_Id + " INTEGER , "
-                + SuperFlingDBSquema.Col_User_Name + " TEXT "
+                + SuperFlingDBSquema.Col_User_Name + " TEXT , "
+                + SuperFlingDBSquema.Col_Image_Stream + " BLOB "
                 + ")";
         db.execSQL(sqlString);
     }

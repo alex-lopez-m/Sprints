@@ -14,6 +14,7 @@ public class SuperFlingDBSquema {
     public static final String Col_Title = "Title";
     public static final String Col_User_Id = "User_Id";
     public static final String Col_User_Name = "User_Name";
+    public static final String Col_Image_Stream = "Image_Stream";
 
     public static final int DATABASE_VERSION = 1;
 
