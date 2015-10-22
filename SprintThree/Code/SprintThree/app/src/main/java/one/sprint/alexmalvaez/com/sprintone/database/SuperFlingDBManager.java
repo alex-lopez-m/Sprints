@@ -5,7 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import one.sprint.alexmalvaez.com.sprintone.database.interfaces.SuperFlingDBInterface;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
@@ -61,6 +68,48 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         close();
 
         return rowId;
+    }
+
+    public int updateImageById(String imageId, Bitmap bitmap){
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        byte[] bArray = bos.toByteArray();
+
+        openOnWritableMode();
+
+        ContentValues values = new ContentValues();
+        values.put(SuperFlingDBSquema.Col_Image_Stream, bArray);
+
+        String[] whereArgs = new String[1];
+        whereArgs[0] = imageId;
+        String whereClause = " " + SuperFlingDBSquema.Col_Image_Id + "=? ";
+
+        int res = dataBase.update(SuperFlingDBSquema.TABLE_NAME, values, whereClause, whereArgs);
+
+        close();
+
+        return res;
+
+    }
+
+    public Bitmap getImageById(String id){
+        Bitmap bmp = null;
+
+        openOnReadableMode();
+
+        Cursor c = dataBase.rawQuery("select  from tb", null);
+
+        if (c.moveToNext()){
+
+            byte[] image = c.getBlob(0);
+            bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+            //imageView1.setImageBitmap(bmp);
+
+            //Toast.makeText(this, "Select Success", Toast.LENGTH_SHORT).show();
+        }
+
+        return bmp;
     }
 
     @Override

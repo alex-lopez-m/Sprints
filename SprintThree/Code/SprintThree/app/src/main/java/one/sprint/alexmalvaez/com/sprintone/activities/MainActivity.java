@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
@@ -232,9 +234,7 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
                                 for(int i=0; i<jsonArray.length(); i++){
 
                                     JSONObject jo = jsonArray.getJSONObject(i);
-
                                     SuperFling sf = new SuperFling(jo.getString(TAG_ID), jo.getString(TAG_IMAGE_ID), jo.getString(TAG_TITLE), jo.getString(TAG_USER_ID), jo.getString(TAG_USER_NAME));
-
                                     //Log.d(MainActivity.class.getSimpleName(), "SUPERFLING " + i + ": " + sf);
 
                                     superFlingList.add(sf);
@@ -268,6 +268,33 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
 
         // Adding request to request queue
         RequestQueueSingleton.getInstance().addToRequestQueue(jsonArrayReq, "", getApplicationContext());
+    }
+
+    public void loadImagesIntoDB(ArrayList<SuperFling> superFlings){
+
+        //Retrieves an image specified by the URL, displays it in the UI.
+        for(int i=0; i<superFlings.size(); i++) {
+
+            final String idImage = superFlings.get(i).imageId;
+
+            ImageRequest request = new ImageRequest(URL_PHOTO_STREAM + "/" + superFlings.get(i).imageId,
+                    new Response.Listener<Bitmap>() {
+                        @Override
+                        public void onResponse(Bitmap bitmap) {
+                            sfDBManager.updateImageById(idImage, bitmap);
+                        }
+                    }, 0, 0, null,
+                    new Response.ErrorListener() {
+                        public void onErrorResponse(VolleyError error) {
+                           Log.e(MainActivity.class.getSimpleName(), "ERROR WHEN DOWNLOADING IMAGE: "+ idImage + "\n"+ error.getMessage());
+                        }
+                    });
+
+            //Access the RequestQueue through your singleton class.
+            RequestQueueSingleton.getInstance().addToRequestQueue(request, "", getApplicationContext());
+
+        }
+
     }
 
     @Override
