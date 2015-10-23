@@ -1,10 +1,13 @@
 package one.sprint.alexmalvaez.com.sprintone.activities;
 
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -15,8 +18,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -24,12 +29,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -38,6 +43,7 @@ import one.sprint.alexmalvaez.com.sprintone.adapters.SuperFlingAdapter;
 import one.sprint.alexmalvaez.com.sprintone.adapters.SuperFlingSSPAdapter;
 import one.sprint.alexmalvaez.com.sprintone.database.SuperFlingDBManager;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
+import one.sprint.alexmalvaez.com.sprintone.services.DownloadImageIntentService;
 import one.sprint.alexmalvaez.com.sprintone.util.RequestQueueSingleton;
 import one.sprint.alexmalvaez.com.sprintone.views.VerticalViewPager;
 
@@ -56,8 +62,10 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
     private static final String TAG_USER_NAME = "UserName";
 
     private SuperFlingDBManager sfDBManager;
-
     private ArrayList<SuperFling> superFlingList;
+
+    private long enqueue;
+    private DownloadManager dm;
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -82,7 +90,7 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
 
         Log.d(MainActivity.class.getSimpleName(), "UNO");
 
-        sfDBManager = new SuperFlingDBManager(this);
+        sfDBManager = SuperFlingDBManager.getSuperFlingDBManager(getApplicationContext());
 
         Log.d(MainActivity.class.getSimpleName(), "DOS");
 
@@ -97,7 +105,7 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
 
         superFlingList = new ArrayList<SuperFling>();
 
-        Log.d(MainActivity.class.getSimpleName(), "CINCO superFlingList: " +superFlingList.size());
+        Log.d(MainActivity.class.getSimpleName(), "CINCO superFlingList: " + superFlingList.size());
 
         superFlingList.add(new SuperFling(" ", " ", " ", " ", " "));
 
@@ -168,6 +176,7 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
 */
 
     public void loadDataIntoDB(){
+        Log.d(MainActivity.class.getSimpleName(), " loadDataIntoDB() ");
         int count = 0;
 
         for (int i = 0; i < superFlingList.size(); i++) {
@@ -183,6 +192,7 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
         }
 
         Toast.makeText(this, count + " SuperFlings added to the DB", Toast.LENGTH_SHORT).show();
+        loadImagesIntoDB(superFlingList);
     }
 
     public void printSuperFlingData(){
@@ -216,12 +226,14 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
     }
 
     public void makeJsonArrayReq(){
+        Log.d(MainActivity.class.getSimpleName(), " makeJsonArrayReq() ");
         JsonArrayRequest jsonArrayReq = new JsonArrayRequest(
                 FLING_URL_JSON_ARRAY,
                 new Response.Listener<JSONArray>() {
 
                     @Override
                     public void onResponse(JSONArray jsonArray) {
+                        Log.d(MainActivity.class.getSimpleName(), " JsonArrayRequest -> onResponse() ");
                         //Log.d(MainActivity.class.getSimpleName(), "RESPUESTA: " + jsonArray.toString());
                         //Toast.makeText(getApplicationContext(), "RESPUESTA: " + jsonArray.toString(), Toast.LENGTH_LONG).show();
 
@@ -271,19 +283,42 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
     }
 
     public void loadImagesIntoDB(ArrayList<SuperFling> superFlings){
+        Log.d(MainActivity.class.getSimpleName(), " loadImagesIntoDB() ");
 
-        //Retrieves an image specified by the URL, displays it in the UI.
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+
+        Log.d(MainActivity.class.getSimpleName(), " width: " + width + " " + "height: " + height);
+
+        for(int i=0; i<superFlings.size(); i++) {
+            Intent intent = new Intent(this, DownloadImageIntentService.class);
+            intent.putExtra(DownloadImageIntentService.URL_EXTRA_STR, URL_PHOTO_STREAM);
+            intent.putExtra(DownloadImageIntentService.IMAGE_ID_EXTRA_STR, superFlings.get(i).imageId);
+            startService(intent);
+        }
+
+        /*
         for(int i=0; i<superFlings.size(); i++) {
 
             final String idImage = superFlings.get(i).imageId;
-
             ImageRequest request = new ImageRequest(URL_PHOTO_STREAM + "/" + superFlings.get(i).imageId,
                     new Response.Listener<Bitmap>() {
                         @Override
                         public void onResponse(Bitmap bitmap) {
-                            sfDBManager.updateImageById(idImage, bitmap);
+
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 50, bos);
+                            byte[] bArray = bos.toByteArray();
+
+                            sfDBManager.updateImageById(idImage, bArray);
+                            bArray = null;
+                            bitmap = null;
+                            System.gc();
+                            Log.e(MainActivity.class.getSimpleName(), " IMAGE: " + idImage + " UPDATED");
+
                         }
-                    }, 0, 0, null,
+                    }, width/2, height/2, null,
                     new Response.ErrorListener() {
                         public void onErrorResponse(VolleyError error) {
                            Log.e(MainActivity.class.getSimpleName(), "ERROR WHEN DOWNLOADING IMAGE: "+ idImage + "\n"+ error.getMessage());
@@ -293,7 +328,10 @@ public class MainActivity extends FragmentActivity { //AppCompatActivity {
             //Access the RequestQueue through your singleton class.
             RequestQueueSingleton.getInstance().addToRequestQueue(request, "", getApplicationContext());
 
+
         }
+        Toast.makeText(this, superFlings.size() + " SuperFlings images added to the DB", Toast.LENGTH_SHORT).show();
+        */
 
     }
 

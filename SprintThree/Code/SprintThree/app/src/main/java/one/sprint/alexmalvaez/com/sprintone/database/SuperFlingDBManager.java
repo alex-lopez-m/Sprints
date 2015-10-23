@@ -19,13 +19,21 @@ import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
  */
 public class SuperFlingDBManager implements SuperFlingDBInterface{
 
+    private static SuperFlingDBManager sfDBManager;
     private SQLiteDatabase dataBase;
-    private final Context context;
-    private final SuperFlingDBHelper sfDBHelper;
+    private SuperFlingDBHelper sfDBHelper;
+    private Context context;
 
-    public SuperFlingDBManager(Context context){
+    private SuperFlingDBManager(Context context){
         this.context = context;
         sfDBHelper = new SuperFlingDBHelper(this.context);
+    }
+
+    public static synchronized SuperFlingDBManager getSuperFlingDBManager(Context context){
+        if(sfDBManager == null){
+            sfDBManager = new SuperFlingDBManager(context);
+        }
+        return sfDBManager;
     }
 
     public void close() {
@@ -67,11 +75,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
         return rowId;
     }
 
-    public int updateImageById(String imageId, Bitmap bitmap){
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-        byte[] bArray = bos.toByteArray();
+    public int updateImageById(String imageId, byte[] bArray){
 
         openOnWritableMode();
 
@@ -84,6 +88,9 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
 
         int res = dataBase.update(SuperFlingDBSquema.TABLE_SUPER_FLING, values, whereClause, whereArgs);
 
+        bArray = null;
+        System.gc();
+
         close();
 
         return res;
@@ -95,7 +102,7 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
 
         openOnReadableMode();
 
-        String[] selectionArgs = new String[0];
+        String[] selectionArgs = new String[1];
         selectionArgs[0] = imageId;
 
         Cursor c = dataBase.rawQuery("SELECT " + SuperFlingDBSquema.Col_Image_Stream
@@ -104,7 +111,9 @@ public class SuperFlingDBManager implements SuperFlingDBInterface{
 
         if (c.moveToNext()){
             byte[] image = c.getBlob(0);
-            bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+            if(image != null) {
+                bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+            }
         }
 
         close();

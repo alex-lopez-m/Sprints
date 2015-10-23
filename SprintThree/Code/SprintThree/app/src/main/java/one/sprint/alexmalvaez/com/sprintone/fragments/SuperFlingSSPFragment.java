@@ -1,15 +1,20 @@
 package one.sprint.alexmalvaez.com.sprintone.fragments;
 
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+
 import one.sprint.alexmalvaez.com.sprintone.R;
+import one.sprint.alexmalvaez.com.sprintone.database.SuperFlingDBManager;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
 
 /**
@@ -18,11 +23,13 @@ import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
 public class SuperFlingSSPFragment extends Fragment {
 
     private SuperFling superFling;
-    private TextView tvId;
-    private TextView tvImageId;
+
+    //private TextView tvId;
+    //private TextView tvImageId;
     private TextView tvTitle;
-    private TextView tvUserId;
-    private TextView tvUserName;
+    //private TextView tvUserId;
+    //private TextView tvUserName;
+    private ImageView imgvBling;
     /**
      * The argument key for the page number this fragment represents.
      */
@@ -86,21 +93,31 @@ public class SuperFlingSSPFragment extends Fragment {
         Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView view: " + view);
 
         // Set the title view to show the page number.
-        tvId = (TextView) view.findViewById(R.id.tv_id);
-        tvImageId = (TextView) view.findViewById(R.id.tv_imageId);
+        //tvId = (TextView) view.findViewById(R.id.tv_id);
+        //tvImageId = (TextView) view.findViewById(R.id.tv_imageId);
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
-        tvUserId = (TextView) view.findViewById(R.id.tv_userId);
-        tvUserName = (TextView) view.findViewById(R.id.tv_userName);
+        //tvUserId = (TextView) view.findViewById(R.id.tv_userId);
+        //tvUserName = (TextView) view.findViewById(R.id.tv_userName);
 
+        Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView before getting image");
 
-        Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView tvIndex: " + tvId);
-        Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView mPageNumber: " + mPageNumber);
+        //if(mPageNumber > 1) {
+            imgvBling = (ImageView) view.findViewById(R.id.imv_bling);
+            Bitmap btm = SuperFlingDBManager.getSuperFlingDBManager(getContext()).getImageById(superFling.imageId);
+            if(btm != null) {
+                imgvBling.setImageBitmap(btm);
+            }else{
+                imgvBling.setImageResource(R.drawable.android);
+            }
+        //}
 
-        tvId.setText(superFling.id);
-        tvImageId.setText(superFling.imageId);
+        Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView after getting image");
+
+        //tvId.setText(superFling.id);
+        //tvImageId.setText(superFling.imageId);
         tvTitle.setText(superFling.title);
-        tvUserId.setText(superFling.userId);
-        tvUserName.setText(superFling.userName);
+        //tvUserId.setText(superFling.userId);
+        //tvUserName.setText(superFling.userName);
 
         return view;
     }

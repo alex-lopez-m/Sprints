@@ -5,21 +5,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <!-- TextView
         android:id="@+id/tv_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textIsSelectable="false"
-        android:textSize="15sp" />
+        android:textSize="15sp" / -->
 
-    <TextView
+    <!-- TextView
         android:id="@+id/tv_imageId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/android_green"
         android:textIsSelectable="false"
-        android:textSize="15sp" />
+        android:textSize="15sp" / -->
 
     <TextView
         android:id="@+id/tv_title"
@@ -31,27 +31,28 @@
         android:textIsSelectable="false"
         android:textSize="25sp" />
 
-    <TextView
+    <!-- TextView
         android:id="@+id/tv_userId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/android_blue"
         android:textIsSelectable="false"
-        android:textSize="15sp" />
+        android:textSize="15sp" / -->
 
-    <TextView
+    <!-- TextView
         android:id="@+id/tv_userName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/android_darkorange"
         android:textIsSelectable="false"
-        android:textSize="15sp" />
+        android:textSize="15sp" / -->
 
     <ImageView
         android:id="@+id/imv_bling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/london"/>
+        android:src="@drawable/android"
+        android:scaleType="fitCenter"/>
 
 
 </LinearLayout>
