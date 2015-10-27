@@ -39,7 +39,7 @@ public class DownloadImageIntentService extends IntentService {
 
             URL imageURL = new URL(urlStr + "/" + idImageStr);
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 2;
+            options.inSampleSize = 1;
             Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openStream(), null, options);
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

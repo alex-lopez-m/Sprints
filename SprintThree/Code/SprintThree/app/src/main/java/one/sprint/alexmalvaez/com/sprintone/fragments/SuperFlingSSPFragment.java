@@ -16,6 +16,7 @@ import java.io.File;
 import one.sprint.alexmalvaez.com.sprintone.R;
 import one.sprint.alexmalvaez.com.sprintone.database.SuperFlingDBManager;
 import one.sprint.alexmalvaez.com.sprintone.models.SuperFling;
+import one.sprint.alexmalvaez.com.sprintone.tasks.LoadSuperFlingImgTask;
 
 /**
  * Created by Android1 on 10/21/2015.
@@ -101,7 +102,9 @@ public class SuperFlingSSPFragment extends Fragment {
 
         Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView before getting image");
 
-        //if(mPageNumber > 1) {
+        imgvBling = (ImageView) view.findViewById(R.id.imv_bling);
+        /*
+            if(mPageNumber > 1) {
             imgvBling = (ImageView) view.findViewById(R.id.imv_bling);
             Bitmap btm = SuperFlingDBManager.getSuperFlingDBManager(getContext()).getImageById(superFling.imageId);
             if(btm != null) {
@@ -109,7 +112,9 @@ public class SuperFlingSSPFragment extends Fragment {
             }else{
                 imgvBling.setImageResource(R.drawable.android);
             }
-        //}
+        }
+        */
+        new LoadSuperFlingImgTask(getContext(),superFling.imageId).execute(imgvBling);
 
         Log.d(SuperFlingSSPFragment.class.getSimpleName(), "SuperFlingSSPFragment.onCreateView after getting image");
 
